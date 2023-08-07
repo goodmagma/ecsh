@@ -27,8 +27,24 @@ aws configure
 javac Ecsh.java
 ```
 
-## Configure ECSH
+## Configure ECSH and profiles
 
-```
+```bash
 ecsh --configure
+
+AWS ECS Shell - v1.0.0
+
+Loading configuration file C:\Users\Denis\.ecsh
+Profile name[default]:
+Cluster name: dev-flexymob
+Saving Configuration file C:\Users\Denis\.ecsh
+```
+
+Ecsh allow you to define more profiles.
+Default profile is the first loaded when you call `ecsh` without arguments.
+
+If you want to define a different profile, you must choose a profile name during configuration (eg `prod`) and then run:
+
+```bash
+ecsh prod
 ```
