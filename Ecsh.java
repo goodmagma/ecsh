@@ -31,6 +31,8 @@ public class Ecsh {
 	
 	/**
 	 * Constructor
+	 * 
+	 * @param profile
 	 */
 	public Ecsh(String profile) {
 		inputScanner = new Scanner(System.in);
@@ -46,9 +48,15 @@ public class Ecsh {
 
 	
 	/**
+	 * Return the configuration file path under USER_HOME/.ecsh
+	*/
+	public String getConfigurationFilePath(){
+		return System.getProperty("user.home") + System.getProperty("file.separator") + ".ecsh";
+	}
+	
+	
+	/**
 	 * Load configurations
-	 * 
-	 * @param cluster
 	*/
 	public void loadConfigurations(){
 		configurations = new Properties();
@@ -69,8 +77,6 @@ public class Ecsh {
 	
 	/**
 	 * Store configurations
-	 * 
-	 * @param cluster
 	*/
 	public void storeConfigurations(String profile, String cluster){
 		try(OutputStream os = new FileOutputStream(getConfigurationFilePath())){
@@ -143,6 +149,7 @@ public class Ecsh {
 	/**
 	 * Read User choice
 	 *
+	 * @param message
 	 * @param maxValue max number allowed
 	*/
 	public int readChoice(String message, int maxValue) throws Exception {
@@ -210,18 +217,14 @@ public class Ecsh {
 	
 	
 	/**
-	 * Return the configuration file path
-	*/
-	public String getConfigurationFilePath(){
-		return System.getProperty("user.home") + System.getProperty("file.separator") + ".ecsh";
-	}
-	
-	
-	/**
 	 * Handle help
 	*/
 	public void handleHelp() {
-		System.out.println("ecsh [--configure]");
+		System.out.println("Usage: ecsh [--options] [profile]");
+		System.out.println("Where options are:");
+		System.out.println("    --help:       This help");
+		System.out.println("    --configure:  Configure wizard");
+		System.out.println("");
 		
 		System.exit(0);
 	}
