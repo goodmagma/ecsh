@@ -21,6 +21,12 @@ aws --version
 aws configure
 ```
 
+### Configure a second aws profile
+
+```
+aws configure --profile prod
+```
+
 ## Compile
 
 ```
@@ -32,7 +38,7 @@ javac Ecsh.java
 ```bash
 ecsh --configure
 
-AWS ECS Shell - v1.0.0
+AWS ECS Shell - v1.1.0
 
 Loading configuration file C:\Users\Denis\.ecsh
 Profile name[default]:

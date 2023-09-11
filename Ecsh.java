@@ -20,6 +20,8 @@ import java.util.Scanner;
 */
 public class Ecsh {
 	
+	private static String VERSION = "v1.1.0";
+	
 	private static String DEFAULT_PROFILE = "default";
 	private static String DEFAULT_CLUSTER = "default";
 	
@@ -251,7 +253,7 @@ public class Ecsh {
 		System.out.println("Connect to Cluster: " + cluster);
 		
 		//Get list of Services
-		String command = "aws ecs list-services --output text --cluster " + cluster;
+		String command = String.format("aws ecs list-services --output text --profile %s --cluster %s", profile, cluster);
 		String cmdOutput = runCommand(command);
 		String[] rawServices = cmdOutput.split("\n");
 		
@@ -270,7 +272,7 @@ public class Ecsh {
 		String serviceName = services.get(choice - 1);		
 		
 		//Get list of Tasks
-		command = "aws ecs list-tasks --output text --cluster " + cluster + " --service-name " + serviceName;		
+		command = String.format("aws ecs list-tasks --output text --profile %s --cluster %s --service-name %s", profile, cluster, serviceName);
 		cmdOutput = runCommand(command);
 		String[] rawTasks = cmdOutput.split("\n");
 		
@@ -297,7 +299,7 @@ public class Ecsh {
 
 		String taskId = tasks.get(choice - 1);
 		
-		command = "start aws ecs execute-command --cluster " + cluster + " --task " + taskId + " --interactive --command \"/bin/bash\"";
+		command = String.format("start aws ecs execute-command --profile %s --cluster %s --task %s --interactive --command \"/bin/bash\"", profile, cluster, taskId);
 
 		runCommand(command);
 		
@@ -311,7 +313,7 @@ public class Ecsh {
      * @param args
      */
 	public static void main(String[] args) throws Exception {
-		System.out.println("AWS ECS Shell - v1.0.0");
+		System.out.println("AWS ECS Shell - " + VERSION);
 		System.out.println("");
 
 		//is there any args?
