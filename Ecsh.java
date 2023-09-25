@@ -299,8 +299,8 @@ public class Ecsh {
 
 		String taskId = tasks.get(choice - 1);
 		
-		command = String.format("start aws ecs execute-command --profile %s --cluster %s --task %s --interactive --command \"/bin/bash\"", profile, cluster, taskId);
-
+		if(isWindows()) command = String.format("start aws ecs execute-command --profile %s --cluster %s --task %s --interactive --command \"/bin/bash\"", profile, cluster, taskId);
+		else command = String.format("xterm -e aws ecs execute-command --profile %s --cluster %s --task %s --interactive --command \"/bin/bash\"", profile, cluster, taskId);
 		runCommand(command);
 		
 		inputScanner.close();

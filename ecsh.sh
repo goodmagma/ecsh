@@ -1,7 +1,9 @@
 #!/bin/bash
+PRGDIR=`dirname "$0"`
+echo $PRGDIR
 if [ "$#" -eq 0 ]
 then
-  java Ecsh
+  java -cp $PRGDIR Ecsh
 else
-  java Ecsh "$1"
+  java -cp $PRGDIR Ecsh $1
 fi
