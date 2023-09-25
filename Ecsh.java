@@ -20,7 +20,7 @@ import java.util.Scanner;
 */
 public class Ecsh {
 	
-	private static String VERSION = "v1.1.0";
+	private static String VERSION = "v1.2.0";
 	
 	private static String DEFAULT_PROFILE = "default";
 	private static String DEFAULT_CLUSTER = "default";
@@ -299,8 +299,13 @@ public class Ecsh {
 
 		String taskId = tasks.get(choice - 1);
 		
-		if(isWindows()) command = String.format("start aws ecs execute-command --profile %s --cluster %s --task %s --interactive --command \"/bin/bash\"", profile, cluster, taskId);
-		else command = String.format("xterm -e aws ecs execute-command --profile %s --cluster %s --task %s --interactive --command \"/bin/bash\"", profile, cluster, taskId);
+		if(isWindows()) {
+			command = String.format("start aws ecs execute-command --profile %s --cluster %s --task %s --interactive --command \"/bin/bash\"", profile, cluster, taskId);
+		}
+		else {
+			command = String.format("xterm -e aws ecs execute-command --profile %s --cluster %s --task %s --interactive --command \"/bin/bash\"", profile, cluster, taskId);
+		}
+		
 		runCommand(command);
 		
 		inputScanner.close();
