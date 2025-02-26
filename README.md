@@ -1,6 +1,8 @@
 # Ecsh
 
-AWS ECS Shell
+AWS ECS Shell helper.
+
+This tool allow to do basic staff like list of ECS cluster of a profile and ssh to one of them.
 
 ## Getting started
 
