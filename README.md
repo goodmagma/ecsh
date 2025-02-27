@@ -47,7 +47,7 @@ AWS ECS Shell - v1.1.0
 
 Loading configuration file C:\Users\Denis\.ecsh
 Profile name[default]:
-Cluster name: dev-flexymob
+Cluster name: dev-mycluster
 Saving Configuration file C:\Users\Denis\.ecsh
 ```
 
