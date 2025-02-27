@@ -20,10 +20,11 @@ import java.util.Scanner;
 */
 public class Ecsh {
 	
-	private static String VERSION = "v1.2.0";
+	private static String VERSION = "v1.2.1";
 	
 	private static String DEFAULT_PROFILE = "default";
 	private static String DEFAULT_CLUSTER = "default";
+	private static String DEFAULT_SHELL = "/bin/sh";
 	
 	private Scanner inputScanner = null;
 	private Properties configurations = null;
@@ -114,6 +115,8 @@ public class Ecsh {
 		} else {
 			builder.command("sh", "-c", command);
 		}
+
+		System.out.println("Running command:\n" + command);
 
 		Process process = builder.start();
 		
@@ -300,10 +303,10 @@ public class Ecsh {
 		String taskId = tasks.get(choice - 1);
 		
 		if(isWindows()) {
-			command = String.format("start aws ecs execute-command --profile %s --cluster %s --task %s --interactive --command \"/bin/bash\"", profile, cluster, taskId);
+			command = String.format("start aws ecs execute-command --profile %s --cluster %s --task %s --interactive --command \"%s\"", profile, cluster, taskId, DEFAULT_SHELL);
 		}
 		else {
-			command = String.format("xterm -e aws ecs execute-command --profile %s --cluster %s --task %s --interactive --command \"/bin/bash\"", profile, cluster, taskId);
+			command = String.format("xterm -e aws ecs execute-command --profile %s --cluster %s --task %s --interactive --command \"%s\"", profile, cluster, taskId, DEFAULT_SHELL);
 		}
 		
 		runCommand(command);

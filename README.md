@@ -29,11 +29,14 @@ aws configure
 aws configure --profile prod
 ```
 
-## Compile
+## Compile and run
 
 ```
 javac Ecsh.java
 ```
+
+Copy ecsh.bat, ecsh.sh, Ecsh.class on a folder and place it on System PATH.
+
 
 ## Configure ECSH and profiles
 
