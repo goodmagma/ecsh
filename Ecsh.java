@@ -21,7 +21,7 @@ import java.util.Collections;
 */
 public class Ecsh {
 	
-	private static String VERSION = "v1.3.1";
+	private static String VERSION = "v1.3.2";
 	
 	private static String DEFAULT_PROFILE = "default";
 	private static String DEFAULT_SHELL = "/bin/sh";
@@ -106,9 +106,10 @@ public class Ecsh {
 	/**
 	 * Run OS command
 	 * 
-	 * @param command
+	 * @param command The command to run
+	 * @param async If true, run the command asynchronously
 	*/
-	private String runCommand(String command) throws Exception {
+	private String runCommand(String command, boolean async) throws Exception {
 		ProcessBuilder builder = new ProcessBuilder();
 
 		if (isWindows()) {
@@ -119,18 +120,33 @@ public class Ecsh {
 
 		System.out.println("Running command:\n" + command);
 
-		Process process = builder.start();
-		
-		BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+		// If async is true, run the command in a separate thread
+		if (async) {
+			new Thread(() -> {
+				try {
+					Process process = builder.start();
+					process.waitFor(); // Wait for the process to finish
+				} catch (IOException | InterruptedException e) {
+					e.printStackTrace();
+				}
+			}).start();
 
-        String line;
-        StringBuilder commandOutput = new StringBuilder();
+			return "Command is running asynchronously.";
+		} 
+		else {
+			Process process = builder.start();
+			
+			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
-        while ((line = reader.readLine()) != null) {
-			commandOutput.append(line).append("\n");
+			String line;
+			StringBuilder commandOutput = new StringBuilder();
+
+			while ((line = reader.readLine()) != null) {
+				commandOutput.append(line).append("\n");
+			}
+
+			return commandOutput.toString();
 		}
-
-		return commandOutput.toString();
 	}
 	
 	
@@ -163,7 +179,6 @@ public class Ecsh {
 
 		// Register a shutdown hook to clean up resources
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-			System.out.println("\nInterruption detected. Exiting...");
 			if (inputScanner != null) {
 				inputScanner.close();
 			}
@@ -207,7 +222,6 @@ public class Ecsh {
 		
 		// Register a shutdown hook to clean up resources
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-			System.out.println("\nInterruption detected. Exiting...");
 			if (inputScanner != null) {
 				inputScanner.close();
 			}
@@ -279,7 +293,7 @@ public class Ecsh {
 		
 		//Get list of Services
 		String command = String.format("aws ecs list-services --output text --profile %s --cluster %s", profile, cluster);
-		String cmdOutput = runCommand(command);
+		String cmdOutput = runCommand(command, false);
 		String[] rawServices = cmdOutput.split("\n");
 		
 		List<String> services = new ArrayList<String>();
@@ -304,7 +318,7 @@ public class Ecsh {
 		
 		//Get list of Tasks
 		command = String.format("aws ecs list-tasks --output text --profile %s --cluster %s --service-name %s", profile, cluster, serviceName);
-		cmdOutput = runCommand(command);
+		cmdOutput = runCommand(command, false);
 		String[] rawTasks = cmdOutput.split("\n");
 		
 		List<String> tasks = new ArrayList<String>();
@@ -337,8 +351,13 @@ public class Ecsh {
 			command = String.format("xterm -e aws ecs execute-command --profile %s --cluster %s --task %s --interactive --command \"%s\"", profile, cluster, taskId, DEFAULT_SHELL);
 		}
 		
-		runCommand(command);
+		runCommand(command, true);
 		
+		System.out.println("Launching shell...");
+		
+		// Sleep for 3 seconds
+        Thread.sleep(3000);
+
 		inputScanner.close();
 	}
 	
