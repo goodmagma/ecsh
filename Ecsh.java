@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.Collections;
 
 
 /**
@@ -20,10 +21,9 @@ import java.util.Scanner;
 */
 public class Ecsh {
 	
-	private static String VERSION = "v1.2.1";
+	private static String VERSION = "v1.3.1";
 	
 	private static String DEFAULT_PROFILE = "default";
-	private static String DEFAULT_CLUSTER = "default";
 	private static String DEFAULT_SHELL = "/bin/sh";
 	
 	private Scanner inputScanner = null;
@@ -39,14 +39,13 @@ public class Ecsh {
 	 */
 	public Ecsh(String profile) {
 		inputScanner = new Scanner(System.in);
-		
-		if( profile == null ) {
-			profile = DEFAULT_PROFILE;
-		}
 
 		this.profile = profile;
 		
-		loadConfigurations();
+		//load configuration only when profile is not null
+		if( profile != null ) {
+			loadConfigurations();
+		}
 	}
 
 	
@@ -73,7 +72,9 @@ public class Ecsh {
 		}
 
 		if( cluster == null ){
-			cluster = DEFAULT_CLUSTER;
+			System.out.println("No profile with name '" + profile + "' found. Exit.");
+
+			System.exit(1);
 		}
 	}
 	
@@ -160,6 +161,14 @@ public class Ecsh {
 	public int readChoice(String message, int maxValue) throws Exception {
 		int choice = 0;
 
+		// Register a shutdown hook to clean up resources
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			System.out.println("\nInterruption detected. Exiting...");
+			if (inputScanner != null) {
+				inputScanner.close();
+			}
+		}));
+
 		while(choice == 0) {
 			System.out.print(message + " (1-" + maxValue + "): ");
 
@@ -173,7 +182,11 @@ public class Ecsh {
 					choice = 0;
 				}
 			}
-			catch(Exception e){
+			catch (NumberFormatException e) {
+				System.err.println("Please enter a number between 1 and " + maxValue);
+			} 
+			catch (Exception e) {
+				System.exit(1);
 			}
 		}
 		
@@ -192,6 +205,14 @@ public class Ecsh {
 	public String readText(String message, String defaultValue) throws Exception {
 		String text = null;
 		
+		// Register a shutdown hook to clean up resources
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			System.out.println("\nInterruption detected. Exiting...");
+			if (inputScanner != null) {
+				inputScanner.close();
+			}
+		}));
+
 		while(text == null) {
 			if( defaultValue != null ) {
 				System.out.print(message + "[" + defaultValue + "]: ");
@@ -214,6 +235,7 @@ public class Ecsh {
 				}
 			}
 			catch(Exception e){
+				System.exit(1);
 			}
 		}
 		
@@ -265,11 +287,17 @@ public class Ecsh {
 			String service = getArnResource(rawService);
 			if( service != null && !"".equals(service) ){
 				services.add(service);
-				
-				System.out.println(services.size() + ") " + service);
 			}
 		}
 		
+		//sort services
+		Collections.sort(services);
+		
+		//print service list
+		for(int idx = 0; idx < services.size(); idx++){
+			System.out.println( (idx + 1) + ") " + services.get(idx));
+		}
+
 		int choice = readChoice("Select Service", services.size());
 
 		String serviceName = services.get(choice - 1);		
