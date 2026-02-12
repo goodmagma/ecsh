@@ -21,7 +21,7 @@ import java.util.Collections;
 */
 public class Ecsh {
 	
-	private static String VERSION = "v1.3.2";
+	private static String VERSION = "v1.3.3";
 	
 	private static String DEFAULT_PROFILE = "default";
 	private static String DEFAULT_SHELL = "/bin/sh";
@@ -42,10 +42,8 @@ public class Ecsh {
 
 		this.profile = profile;
 		
-		//load configuration only when profile is not null
-		if( profile != null ) {
-			loadConfigurations();
-		}
+		//load configurations
+		loadConfigurations();
 	}
 
 	
@@ -62,16 +60,19 @@ public class Ecsh {
 	*/
 	public void loadConfigurations(){
 		configurations = new Properties();
+		
 		try(InputStream is = new FileInputStream(getConfigurationFilePath())){
 			configurations.load(is);
 
-			cluster = configurations.getProperty(profile + ".cluster");
-			
 			System.out.println("Loading configuration file " + getConfigurationFilePath());
+			
+			if( profile != null ){
+				cluster = configurations.getProperty(profile + ".cluster");
+			}
 		} catch (IOException e) {
 		}
 
-		if( cluster == null ){
+		if( profile != null && cluster == null ){
 			System.out.println("No profile with name '" + profile + "' found. Exit.");
 
 			System.exit(1);
